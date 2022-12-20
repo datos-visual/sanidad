@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Mapa de especialidades médicas</title>
+    <!-- Incluye la librería de Mapbox -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css' rel='stylesheet' />
+    <!-- Incluye la librería D3 para procesar datos -->
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <!-- Incluye la librería de Mapbox Geocoder -->
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js'></script>
+
+</head>
+
+<body>
+    
+    <!-- Mapa -->
+    <div id='map' style='width: 100%; height: 600px;'></div>
+
+    <!-- Desplegable para seleccionar la especialidad -->
+    <label for='specialty'>Especialidad médica:</label>
+    <select id='specialty'>
+    <option value='cardiology'>Cardiología</option>
+    <option value='dermatology'>Dermatología</option>
+    <option value='neurology'>Neurología</option>
+    <!-- Más opciones aquí -->
+    </select>
+
+    <script>
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGF0b3NydHZlIiwiYSI6ImNrczV5YW9sdDI1azUyb3BqZW91ZGRhbzMifQ.0vdRqqdlTOWqrOtg7ldSNQ';
+        var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/streets-v11'
+});
+
+// Añade un geocoder para buscar municipios
+map.addControl(new MapboxGeocoder({
+  accessToken: mapboxgl.accessToken,
+  mapboxgl: mapboxgl
+}));
+
+// Carga los datos de los municipios y los centros médicos
+map.on('load', function() {
+  map.addSource('municipios', {
+    type: 'geojson',
+    data: '/centroides_municipios.geojson'
+  });
+
+  map.addSource('centros', {
+    type: 'geojson',
+    data: '/centroides_hospitales.geojson'
+  });
+
+  // Si no hay municipios en esta posición, elimina el círculo y quita el resalte de los polígonos
+  map.getCanvas().style.cursor = '';
+    map.setFilter('municipios', ['==', 'c_mun', '']);
+  });
+
+// Muestra información de los hospitales al pasar el mouse por encima de los municipios
+map.on('mousemove', function(e) {
+  // Obtiene la especialidad seleccionada
+  var specialty = document.getElementById('specialty').value;
+
+  // Obtiene la información de los municipios que intersectan con la posición del mouse
+  var features = map.queryRenderedFeatures(e.point, {
+    layers: ['municipios']
+  });
+
+  // Si hay municipios en esta posición, muestra información del hospital más cercano
+  if (features.length) {
+    // Obtiene el municipio más cercano al mouse
+    var feature = features[0];
+
+    // Obtiene el hospital más cercano al municipio
+    var hospital = feature.properties.nearest_hospital;
+
+    // Muestra un popup con información del hospital
+    new mapboxgl.Popup()
+      .setLngLat(hospital.geometry.coordinates)
+      .setHTML('<h3>' + hospital.properties.nombre_centro + '</h3><p>' + hospital.properties.direccion + '</p>')
+      .addTo(map);
+  }
+});
+
+// Muestra información de los hospitales al pasar el mouse por encima de los municipios
+map.on('mousemove', function(e) {
+  // Obtiene la especialidad seleccionada
+  var specialty = document.getElementById('specialty').value;
+
+  // Obtiene la información de los municipios que intersectan con la posición del mouse
+  var features = map.queryRenderedFeatures(e.point, {
+    layers: ['municipios']
+  });
+
+  // Si hay municipios en esta posición, muestra información del hospital más cercano
+  if (features.length) {
+    // Obtiene el municipio más cercano al mouse
+    var feature = features[0];
+
+    // Obtiene el hospital más cercano al municipio
+    var hospital = feature.properties.nearest_hospital;
+
+    // Muestra un popup con información del hospital
+    new mapboxgl.Popup()
+      .setLngLat(hospital.geometry.coordinates)
+      .setHTML('<h3>' + hospital.properties.nombre_centro + '</h3><p>' + hospital.properties.direccion + '</p>')
+      .addTo(map);
+    }
+});
+
+// Ajusta el zoom del mapa al radio del círculo alrededor del municipio al seleccionar un resultado con el geocoder
+geocoder.on('result', function(e) {
+  // Obtiene la especialidad seleccionada
+  var specialty = document.getElementById('specialty').value;
+
+  // Obtiene la información del municipio seleccionado
+  var feature = e.result.geometry;
+
+  // Ajusta el zoom del mapa al radio del círculo alrededor del municipio
+  map.jumpTo({
+    center: feature.coordinates,
+    zoom: Math.max(10, Math.log2(feature.properties.distance_to_specialty) - 2)
+  });
+});        
+
+    </script>
+</body>
+
+</html>
