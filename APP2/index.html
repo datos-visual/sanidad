@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Mapa de especialidades médicas</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.6.1/mapbox-gl-geocoder.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/6.2.0/d3.min.js'></script>
+    <link rel='stylesheet' href='styles.css'>
+</head>
+
+<body>
+    <!-- Menú desplegable para seleccionar la especialidad -->
+    <select id='specialty-menu'>
+        <option value='todas'>Todas</option>
+    </select>
+
+    <!-- HTML para insertar el mapa de Mapbox y el menú desplegable para seleccionar la especialidad médica -->
+    <div id="map"></div>
+    <div id="specialty-menu">
+        <select>
+            <option value="cardiology">Cardiology</option>
+            <option value="dermatology">Dermatology</option>
+            <!-- Añade aquí más opciones para las diferentes especialidades médicas -->
+        </select>
+    </div>
+
+    <!-- Popup para mostrar información de los centros médicos -->
+    <div id='popup'></div>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.6.1/mapbox-gl-geocoder.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/6.2.0/d3.min.js'></script>
+    <script src='app.js'></script>
+</body>
+
+</html>
