@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Mapa de centros médicos</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'>
+
+    <!-- Incluye la biblioteca de Mapbox -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.2.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet'
+        href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.2.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+
+    <!-- Incluye la biblioteca de D3 -->
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+
+    <!-- Estilo del mapa -->
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Contenedor del mapa -->
+    <div id='map'></div>
+
+    <!-- Contenedor del desplegable de especialidades -->
+    <div id='especialidades'>
+        <label for='selectEspecialidad'>Especialidad:</label>
+        <select id='selectEspecialidad'>
+        </select>
+    </div>
+
+    <!-- Código JavaScript -->
+    <script>
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGF0b3NydHZlIiwiYSI6ImNrczV5YW9sdDI1azUyb3BqZW91ZGRhbzMifQ.0vdRqqdlTOWqrOtg7ldSNQ';
+        // Crea una instancia de Mapbox
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [0, 40],
+            zoom: 3
+        });
+
+        // Añade un geocoder para buscar municipios
+        const geocoder = new mapboxgl.MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        });
+
+        document.getElementById('map').appendChild(geocoder.onAdd(map));
+
+        // Carga los datos del archivo CSV
+        d3.csv('https://raw.githubusercontent.com/datos-visual/sanidad/main/distancias_centros_prueba.csv', (error, data) => {
+            if (error) throw error;
+
+            // Crea una capa de círculos con el radio que has indicado
+            map.addLayer({
+                id: 'circles',
+                type: 'circle',
+                source: {
+                    type: 'geojson',
+                    data: {
+                        type: 'FeatureCollection',
+                        features: data.map(d => {
+                            return {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [d.lon, d.lat]
+                                },
+                                properties: {
+                                    radius: d.radius,
+                                    especialidad: d.tipo
+                                }
+                            };
+                        })
+                    }
+                },
+                paint: {
+                    'circle-radius': ['get', 'radius'],
+                    'circle-color': 'blue'
+                },
+                filter: ['==', 'especialidad', '']
+            });
+
+            // Añade una capa de municipios
+            map.addLayer({
+                id: 'municipios',
+                type: 'fill',
+                source: {
+                    type: 'geojson',
+                    data: 'https://raw.githubusercontent.com/datos-visual/sanidad/main/centroides_sanidad02.geojson'
+                },
+                paint: {
+                    'fill-color': 'red',
+                    'fill-opacity': 0.5
+                }
+            });
+
+            // Añade un desplegable de especialidades
+            const select = d3.select('#selectEspecialidad')
+                .on('change', () => {
+                    const especialidad = d3.event.target.value;
+
+                    // Filtra la capa de círculos por especialidad
+                    map.setFilter('circles', ['==', 'especialidad', especialidad]);
+                });
+            select.selectAll('option')
+                .data(d3.map(data, d => d.tipo).keys())
+                .enter()
+                .append('option')
+                .attr('value', d => d)
+                .text(d => d);
+
+            // Muestra información adicional cuando el usuario pasa el mouse por encima de un municipio
+            map.on('mousemove', 'municipios', e => {
+                const municipio = e.features[0];
+                const especialidad = municipio.properties.especialidad;
+                const distancia = municipio.properties.distancia;
+                const lonCentro = municipio.properties.lon_centro;
+                const latCentro = municipio.properties.lat_centro;
+
+                // Muestra la información adicional en una ventana emergente
+                new mapboxgl.Popup()
+                    .setLngLat([lonCentro, latCentro])
+                    .setHTML(`<p>Especialidad: ${especialidad}</p><p>Distancia: ${distancia} km</p>`)
+                    .addTo(map);
+            });
+
+            // Resalta el municipio cuando el usuario pasa el mouse por encima
+            map.on('mouseenter', 'municipios', () => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', 'municipios', () => {
+                map.getCanvas().style.cursor = '';
+            });
+        });
+    </script>
+</body>
+
+</html>
