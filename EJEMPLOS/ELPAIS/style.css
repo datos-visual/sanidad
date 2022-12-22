@@ -1,0 +1,457 @@
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-regular-webfont.woff') format('woff'); font-weight: normal; font-style: normal;font-display: swap; }
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-regularitalic-webfont.woff') format('woff'); font-weight: normal; font-style: italic;font-display: swap; }
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-light-webfont.woff') format('woff'); font-weight: 200; font-style: normal;font-display: swap; }
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-book-webfont.woff') format('woff'); font-weight: 100; font-style: normal;font-display: swap; }
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-medium-webfont.woff') format('woff'); font-weight: 500; font-style: normal;font-display: swap; }
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-bold-webfont.woff') format('woff'); font-weight: 700; font-style: normal;font-display: swap; }
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-bolditalic-webfont.woff') format('woff'); font-weight: 700; font-style: italic;font-display: swap; }
+@font-face { font-family: 'Benton Sans'; src: url('/fonts/v2.x/v2.0/benton/bentonsans-black-webfont.woff') format('woff'); font-weight: 900; font-style: normal;font-display: swap; }
+
+body { margin:0; padding:0; }
+
+.oculto{ display: none; }
+
+.map-container{ position: relative; }
+
+#map { top:0em; bottom:0; width:100%; height: 60vh; border-bottom: 1px solid #E0E0E0; overflow: inherit; margin-bottom: 65px;}
+/* #map { top:0em; bottom:0; width:100%; height: 60vh; border-bottom: 1px solid #E0E0E0; overflow: inherit; margin-bottom: 65px;} */
+.map-nav { text-align: center; padding: 10px 0;display: block; font-family: 'Benton Sans', sans-serif; }
+.map-nav p{ margin-bottom: 10px; }
+.map-nav label{ display: block; }
+.map-nav button, 
+.map-nav a{
+    text-transform: uppercase;
+    font-weight: 300;
+    height: 34px;
+    padding: 0px 16px 0 36px;
+    border-radius: 50px;
+    min-width: 80px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+    border:2px solid #006ea7; 
+    margin: 0 5px;
+    background: #FFF;
+    color: #ffffff;
+    vertical-align: middle;
+    position: relative;
+}
+
+.map-nav button:before{
+    content: '';
+    display: inline-block;
+    width: 30px; 
+    height: 30px; 
+    background: #FFF;
+    border-radius: 100%;
+    position: absolute;
+    top:0;
+    left: 0;
+} 
+
+.map-nav button:hover, 
+.map-nav a:hover,
+.map-nav button.selected, 
+.map-nav a.selected{
+    background: #ffffff;
+    color: #fff;
+}    
+.map-nav button.selected, 
+.map-nav a.selected{
+    cursor: inherit;
+}
+
+.map-nav button:hover, 
+.map-nav a:hover{
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,110,167,0.75);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,110,167,0.75);
+    box-shadow: 0px 0px 5px 0px rgba(0,110,167,0.75);
+}
+
+.map-nav button.selected:hover, 
+.map-nav a.selected:hover{
+    -webkit-box-shadow: 0px 0px 0px 0px rgba(0,110,167,0);
+    -moz-box-shadow: 0px 0px 0px 0px rgba(0,110,167,0);
+    box-shadow: 0px 0px 0px 0px rgba(0,110,167,0);
+}
+
+.map-nav a.disabled,
+.map-nav button.disabled{
+    background: #EEE;
+    border-color: #DDD;
+    color: #AAA;
+}
+.map-nav a.disabled:hover,
+.map-nav button.disabled:hover{
+    cursor: inherit;
+    -webkit-box-shadow: 0px 0px 0px 0px rgba(0,110,167,0);
+    -moz-box-shadow: 0px 0px 0px 0px rgba(0,110,167,0);
+    box-shadow: 0px 0px 0px 0px rgba(0,110,167,0);
+
+}
+
+.map-nav button#bt_todos{  padding: 0px 8px 0 8px; }
+.map-nav button#bt_todos:before{display: none;} 
+
+.map-nav button#bt_hospitales{color: #D00202;border-color: #D00202;}
+.map-nav button#bt_infantiles{color:#998EC3;border-color:#998EC3;}
+.map-nav button#bt_cajeros{color:#f1a340;border-color:#f1a340;}
+.map-nav button#bt_gasolineras{color:#B35805;border-color:#B35805;}
+
+.map-nav button#bt_hospitales:before{ background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-hospital.svg) center no-repeat; background-size: 16px auto; }
+.map-nav button#bt_infantiles:before{ background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-guarde.svg) center no-repeat; background-size: 18px auto; }
+.map-nav button#bt_cajeros:before{ background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-cajero.svg) center no-repeat; background-size: 18px auto; }
+.map-nav button#bt_gasolineras:before{ background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-petrol.svg) center no-repeat; background-size: 16px auto; }
+
+.map-nav button#bt_hospitales.selected{background-color: #D00202;border-color: #D00202; color:#FFF;}
+.map-nav button#bt_infantiles.selected{background-color:#998EC3;border-color:#998EC3; color:#FFF;}
+.map-nav button#bt_cajeros.selected{background-color:#f1a340;border-color:#f1a340; color:#FFF;}
+.map-nav button#bt_gasolineras.selected{background-color:#B35805;border-color:#B35805; color:#FFF;}
+
+
+
+ul.datos-distancias{ text-align: center; margin: 30px auto }
+ul.datos-distancias li{ 
+    list-style: none; 
+    width: 18%; 
+    margin: 0 3%; 
+    display: inline-block; 
+    background: #E0E0E0;
+    border-radius: 16px;
+    height: 33px; 
+    line-height: 33px;
+    position: relative;
+}
+ul.datos-distancias li:before{
+    content: '';
+    display: inline-block;
+    width: 45px; 
+    height: 45px; 
+    background: #FFF;
+    border-radius: 100%;
+    position: absolute;
+    border: 2px solid;
+    top:-6px;
+    left: -22px;
+}
+
+ul.datos-distancias li.dato-farmacia:before{border-color: #D00202; background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-hospital.svg) center no-repeat; background-size: 22px auto;}
+ul.datos-distancias li.dato-escuela:before{border-color:#998EC3; background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-guarde.svg) center no-repeat; background-size: 24px auto;}
+ul.datos-distancias li.dato-cajero:before{border-color:#f1a340; background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-cajero.svg) center no-repeat; background-size: 24px auto;}
+ul.datos-distancias li.dato-gasolinera:before{border-color:#B35805; background: #FFF url(//wdg00.epimg.net/mapbox/esp-vacia/img/icon-petrol.svg) center no-repeat; background-size: 22px auto; }
+
+.textos-datos{ max-width: 980px; }
+.textos-datos span{ font-weight: 700; }
+.textos-datos span{}
+
+.textos-datos span.texto-farmacia{color: #2B9200;}
+.textos-datos span.texto-escuela{color:#998EC3;}
+.textos-datos span.texto-cajero{color:#f1a340;}
+.textos-datos span.texto-gasolinera{color:#B35805;}
+
+.mapboxgl-ctrl-top-right{  
+    top: auto;
+    bottom: -50px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl{
+   
+}
+
+.mapboxgl-ctrl-geocoder--icon-search {
+    left: 7px;
+    width: 20px;
+    height: 20px;
+    top:8px;
+}
+
+.mapboxgl-ctrl-geocoder--input{
+    box-sizing: border-box;
+    margin: 0 auto;
+    color: #017A9C;
+    padding: 0 30px 0 35px;
+    font-size: 14px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    outline: none;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #017A9C;
+    width: 100%;
+    line-height: 36px;
+    height: 36px;
+    display: block;
+    max-width: 300px;
+}
+
+.mapboxgl-ctrl-geocoder--icon-search
+
+#header {
+    margin-top: 0em;
+    padding-top: 1em;
+    width:100% !important;
+    text-align: center;
+}
+
+#details {
+    margin-top: 0.75em;
+    width:100% !important;
+}
+
+#details h5 {
+    margin-bottom: 0.2em;
+    padding:  0.25rem 0;
+    background: #EEE;
+}
+
+#details h5 small{ color: black; }
+
+#box_left {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#box_right {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#box_title {
+    text-align: center;
+    padding: 0 5px;
+}
+
+
+.table-map tr td:first-child:before { display: inline-block; width: 10px; height: 10px; background: #FFF; content: ''; margin-right: 5px; border-radius: 100%; }
+
+.table-map tr td.PSOE:before { background: #ED1C24;}
+.table-map tr td.PP:before { background: #008BD6;}
+.table-map tr td.Cs:before { background: #FA5000;}
+.table-map tr td.UP:before,
+.table-map tr td.POD:before  { background: #6A2E68;}
+.table-map tr td.VOX:before { background: #5AC035;}
+.table-map tr td.ERC:before { background: #F3B217;}
+.table-map tr td.PNV:before { background: #009526;}
+.table-map tr td.JxC:before { background: #294268;}
+.table-map tr td.Bildu:before { background: #A3C940;}
+.table-map tr td.CC:before { background: #FFDA1A;}
+.table-map tr td.PAC:before { background: #AFBF00;}
+.table-map tr td.MAR:before { background: #1450FF;}
+.table-map tr td.COM:before { background: #DB6426;}
+.table-map tr td.BNG:before { background: #76B2E1;}
+.table-map tr td.MM:before { background: #59C9A5;}
+.table-map tr td.MÉS:before { background: #C1D42F;}
+.table-map tr td.PI:before { background: #59126B;}
+.table-map tr td.NC:before { background: #5AC035;}
+.table-map tr td.CHA:before { background: #cc3333;}
+.table-map tr td.PAR:before { background: gold;}
+.table-map tr td.PRC:before { background: #75CE6D;}
+.table-map tr td.FAC:before { background: #102540;}
+.table-map tr td.UPL:before { background: #b41062;}
+.table-map tr td.NA:before { background: #008BD6;}
+.table-map tr td.IU:before { background: #A93226;}
+.table-map tr td.XAV:before { background: #F9C22E;}
+.table-map tr td.BeC:before { background: #EF5D4C;}
+.table-map tr td.OTROS:before { background: grey;}
+.table-map tr td.ZGZeC:before { background: #BE242E;}
+
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {display: none;}
+
+
+.table-map {
+    margin-top:0px;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.table-map th {
+    border-top: none;
+    font-weight: 300;
+    font-size: 0.9em;
+    color: grey;
+    border-bottom: 1px solid #EEE;
+    border-top: 1px solid #EEE;
+}
+
+.table-map td {
+    border: none;
+    line-height: 1.2em;
+   /* border-bottom: 1px dotted #E0E0E0;*/
+}
+
+td.table-right {
+    text-align: right;
+}
+
+th.table-right {
+    text-align: right;
+}
+
+td .unit {
+    display: inline;
+    color: grey;
+    font-size: 0.8em;
+    text-align: right;
+    font-weight: 600;
+}
+
+button:focus{
+    outline: none;
+}
+
+canvas:focus{
+    outline: none;
+}
+.mapboxgl-popup-content {
+    padding: 10px;
+    background-color: rgba(255,255,255, 1);
+    font-size: 1.25em;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.5);
+}
+
+.mapboxgl-popup-content p {
+    margin: 0px;
+    line-height: 0.75em;
+    text-align: center;
+}
+
+.mapboxgl-popup-content p.large {
+    font-weight: 600;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    position: absolute;
+    width: 200px;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    }
+     
+    .map-overlay .map-overlay-inner {
+    background-color: rgba(0,0,0,0.6);
+    box-shadow:0 1px 2px rgba(150, 150, 150, 0.10);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border:1px solid #333;
+    }
+     
+    .map-overlay-inner fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 10px;
+    }
+     
+    .map-overlay-inner fieldset:last-child {
+    margin: 0;
+    }
+     
+    .map-overlay-inner select {
+    width: 100%;
+    border:1px solid #333;
+    border-radius: 3px;
+    background-color: #000;
+    color: #DDD;
+    height: 24px;
+    line-height: 24px;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat, repeat;
+    background-position: right .7em top 50%, 0 0;
+    background-size: .65em auto, 100%;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    padding-left: 5px;
+    }
+
+     
+
+    .map-overlay-inner select::-ms-expand {
+        display: none;
+    }
+    .map-overlay-inner select:hover {
+        border-color: #888;
+    }
+    .map-overlay-inner select:focus {
+        border-color: #aaa;
+        box-shadow: 0 0 1px 1px rgba(150, 150, 150, .4);
+        box-shadow: 0 0 0 1px -moz-mac-focusring;
+        outline: none;
+    }
+    .map-overlay-inner select option {
+        font-weight:normal;
+    }
+
+    .map-overlay-inner label {
+    display: block;
+    font-weight: bold;
+    margin: 0 0 5px;
+    color: #DDD;
+    }
+     
+    .map-overlay-inner button {
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+    }
+     
+    .map-overlay-inner button:focus {
+    outline: none;
+    }
+     
+    .map-overlay-inner button:hover {
+    box-shadow:inset 0 0 0 3px rgba(0, 0, 0, 0.10);
+    }
+
+
+
+
+@media (min-width: 768px) {
+
+    #map { top:0em; bottom:0; width:100%; height: 60vh;}
+    
+    #box_left {
+        padding-left: 10px;
+        padding-right: 15px;
+    }
+    
+    #box_right {
+        padding-left: 15px;
+        padding-right: 10px;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .map-overlay { 
+        right: 50%; 
+        transform: translateX(50%);
+    }
+
+    .map-nav button, .map-nav a {
+        width: 45%;
+        margin-bottom: 10px;
+    }
+
+    ul.datos-distancias{
+        padding:0;
+        width: 100% 
+    }
+    ul.datos-distancias li{ 
+        list-style: none; 
+        width: 31%; 
+        margin:0 8% 20px; 
+    }
+
+}

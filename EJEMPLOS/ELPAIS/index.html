@@ -1,0 +1,519 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Nuestro mapa</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, 
+    shrink-to-fit=no, width=device-width, height=device-height">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.1/mapbox-gl.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.1/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.css"
+        type="text/css">
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css"
+        type="text/css">
+    <!--<link rel="stylesheet" type="text/css" href="//wdg00.epimg.net/mapbox/espana-vacia/style.css?v=20191026">-->
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <meta id="Reverso_extension___elForCheckedInstallExtension" name="Reverso extension" content="2.2.203">
+</head>
+
+<body>
+    <script type="text/javascript">PEPuid = 'W9g/72N01Y8ThALHBsIHAg==';</script>
+    <div id="pxlhddncntrl" style="display:none">
+        <!--
+        <script src="//ep00.epimg.net/js/prisa/user.js?i=1"></script>
+        <script src="//ep00.epimg.net/js/comun/comun.js"></script>
+        -->
+        <script src="./user.js?i=1"></script>
+        <script src="./comun.js"></script>
+    </div>
+    <div class="map-nav">
+        <fieldset>
+            <button class="btnFilter selected" id="bt_hospitales">Hospital</button>
+            <button class="btnFilter selected" id="bt_infantiles">Esc. Infantil</button>
+            <button class="btnFilter selected" id="bt_cajeros">Cajero</button>
+            <button class="btnFilter selected" id="bt_gasolineras">Gasolinera</button>
+
+        </fieldset>
+    </div>
+    <div class="map-container">
+        <div id="map" class="mapboxgl-map">
+            <div class="mapboxgl-canary" style="visibility: hidden;"></div>
+            <div
+                class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate">
+                <canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" width="637" height="561"
+                    style="position: absolute; width: 637px; height: 561px;"></canvas></div>
+            <div class="mapboxgl-control-container">
+                <div class="mapboxgl-ctrl-top-left"></div>
+                <div class="mapboxgl-ctrl-top-right">
+                    <div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl"><svg
+                            class="mapboxgl-ctrl-geocoder--icon mapboxgl-ctrl-geocoder--icon-search" viewBox="0 0 18 18"
+                            xml:space="preserve" width="18" height="18">
+                            <path
+                                d="M7.4 2.5c-2.7 0-4.9 2.2-4.9 4.9s2.2 4.9 4.9 4.9c1 0 1.8-.2 2.5-.8l3.7 3.7c.2.2.4.3.8.3.7 0 1.1-.4 1.1-1.1 0-.3-.1-.5-.3-.8L11.4 10c.4-.8.8-1.6.8-2.5.1-2.8-2.1-5-4.8-5zm0 1.6c1.8 0 3.2 1.4 3.2 3.2s-1.4 3.2-3.2 3.2-3.3-1.3-3.3-3.1 1.4-3.3 3.3-3.3z">
+                            </path>
+                        </svg><input type="text" class="mapboxgl-ctrl-geocoder--input" placeholder="Busca tu municipio">
+                        <div class="suggestions-wrapper">
+                            <ul class="suggestions" style="display: none;"></ul>
+                        </div>
+                        <div class="mapboxgl-ctrl-geocoder--pin-right"><button aria-label="Clear"
+                                class="mapboxgl-ctrl-geocoder--button"><svg
+                                    class="mapboxgl-ctrl-geocoder--icon mapboxgl-ctrl-geocoder--icon-close"
+                                    viewBox="0 0 18 18" xml:space="preserve" width="18" height="18">
+                                    <path
+                                        d="M3.8 2.5c-.6 0-1.3.7-1.3 1.3 0 .3.2.7.5.8L7.2 9 3 13.2c-.3.3-.5.7-.5 1 0 .6.7 1.3 1.3 1.3.3 0 .7-.2 1-.5L9 10.8l4.2 4.2c.2.3.7.3 1 .3.6 0 1.3-.7 1.3-1.3 0-.3-.2-.7-.3-1l-4.4-4L15 4.6c.3-.2.5-.5.5-.8 0-.7-.7-1.3-1.3-1.3-.3 0-.7.2-1 .3L9 7.1 4.8 2.8c-.3-.1-.7-.3-1-.3z">
+                                    </path>
+                                </svg></button><svg
+                                class="mapboxgl-ctrl-geocoder--icon mapboxgl-ctrl-geocoder--icon-loading"
+                                viewBox="0 0 18 18" xml:space="preserve" width="18" height="18">
+                                <path fill="#333" d="M4.4 4.4l.8.8c2.1-2.1 5.5-2.1 7.6 0l.8-.8c-2.5-2.5-6.7-2.5-9.2 0z">
+                                </path>
+                                <path opacity=".1"
+                                    d="M12.8 12.9c-2.1 2.1-5.5 2.1-7.6 0-2.1-2.1-2.1-5.5 0-7.7l-.8-.8c-2.5 2.5-2.5 6.7 0 9.2s6.6 2.5 9.2 0 2.5-6.6 0-9.2l-.8.8c2.2 2.1 2.2 5.6 0 7.7z">
+                                </path>
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-left">
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-group"><button
+                            class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" title="Zoom in"
+                            aria-label="Zoom in"></button><button
+                            class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out mapboxgl-ctrl-icon-disabled" type="button"
+                            title="Zoom out" aria-label="Zoom out"></button></div>
+                    <div class="mapboxgl-ctrl" style="display: block;"><a class="mapboxgl-ctrl-logo" target="_blank"
+                            rel="noopener nofollow" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a></div>
+                </div>
+                <div class="mapboxgl-ctrl-bottom-right">
+                    <div class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-compact">
+                        <div class="mapboxgl-ctrl-attrib-inner"><a href="https://www.mapbox.com/about/maps/"
+                                target="_blank" title="Mapbox" aria-label="Mapbox" role="listitem">© Mapbox</a> <a
+                                href="https://www.openstreetmap.org/about/" target="_blank" title="OpenStreetMap"
+                                aria-label="OpenStreetMap" role="listitem">© OpenStreetMap</a> <a
+                                class="mapbox-improve-map"
+                                href="https://apps.mapbox.com/feedback/?owner=elpaislab&amp;id=ck1teyglb2xr11cqe118iyalc&amp;access_token=pk.eyJ1IjoiZWxwYWlzbGFiIiwiYSI6ImNqbmRmZHB4cjA3MDYzcG80eTkxNThrMmIifQ.Q2nDlfQEHfZDwimIMPZE5g"
+                                target="_blank" title="Improve this map" aria-label="Improve this map" role="listitem"
+                                rel="noopener nofollow">Improve this map</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid" id="details">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-6" id="box_title">
+                    <p id="datos" class="textos-datos">
+                        En <span id="municipio">Albalat dels Tarongers</span> viven <span id="pob">1169</span> personas.
+                        <br>
+                        Hay que desplazarse <span id="radius">8</span> km para encontrar un hospital, una gasolinera,
+                        dos escuelas y dos cajeros. En el municipio hemos localizado:
+                    </p>
+                    <p id="instrucciones" class="textos-datos oculto">Introduzca su municipio para conocer sus servicios
+                    </p>
+                    <ul class="datos-distancias">
+                        <li class="dato-farmacia"><span id="hospital">0</span></li>
+                        <li class="dato-escuela"><span id="escuela">0</span></li>
+                        <li class="dato-cajero"><span id="cajero">0</span></li>
+                        <li class="dato-gasolinera"><span id="gasolinera">0</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-6 col-xl-3" id="box_left"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZWxwYWlzbGFiIiwiYSI6ImNqbmRmZHB4cjA3MDYzcG80eTkxNThrMmIifQ.Q2nDlfQEHfZDwimIMPZE5g';
+
+        // parámetros
+        var hoveredStateId = null;
+        var searched_lngLat = null;
+        var propertyToFilter = 'tipo'
+        
+        var urlSourceCircles =  'mapbox://elpaislab.2y2w8omv' //'mapbox://datosrtve.aad2qwv4'
+        var urlSourceShapes =  'mapbox://elpaislab.1qa37l1j' //'mapbox://datosrtve.dtxno6ev'
+
+        console.table(urlSourceCircles);
+        
+        var sourceLayerCircles = 'mun_circles'
+        var sourceLayerShapes = 'mun_shapes_info'
+
+        // función auxiliar decimales
+        // const to_ES = (number, digits = 0) => number.toLocaleString("es", {
+        //   minimumFractionDigits: digits,
+        //   maximumFractionDigits: digits
+        // })
+
+        // función auxiliar decimales
+        const to_ES = (number) => {
+            digits = (number < 1 & number > 0 ? 1 : 0);
+            return number.toLocaleString("es", {
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits
+            })
+        }
+
+        // load map
+        var map = new mapboxgl.Map({
+            container: 'map', // container id    
+            style: 'mapbox://styles/elpaislab/ck1teyglb2xr11cqe118iyalc',
+            center: [-3.703790, 40.416775],// starting position [lng, lat]
+            zoom: 5, // starting zoom
+            minZoom: 5,
+            maxZoom: 11,
+            attributionControl: false,
+            //maxBounds: [[-28, 25], [22, 52]]
+        });
+
+        // añadimos controler y zoom
+        map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
+        var nav = new mapboxgl.NavigationControl({ showCompass: false });
+        map.addControl(nav, 'bottom-left');
+
+        /// disable map zoom when using scroll
+        // map.touchZoomRotate.disable();
+        //map.scrollZoom.disable();
+        // twoFingerMapboxPan(map)
+        // map.dragPan.disable();
+
+
+        // añadimos el geocoder. types: place para municipios, para calles comentar types!
+        var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            countries: 'es',
+            language: 'es',
+            types: 'place',
+            placeholder: 'Busca tu municipio',
+            flyTo: { zoom: 10, speed: 0.75 },
+            bbox: [ -28, 25, 22, 52],
+
+        });
+        map.addControl(geocoder, 'top-right');
+
+
+        // añadimos mapa
+        map.on('load', function () {
+            // añadimos las fuentes con el id de Mapbox
+
+            // fuente de info con círculos
+            map.addSource("source_circles", {
+                type: 'vector',
+                url: urlSourceCircles,
+            });
+
+            // fuente de info con shapes
+            map.addSource("source_shapes", {
+                type: 'vector',
+                url: urlSourceShapes,
+            });
+
+
+            // a partir de las fuentes añadimos layers al mapa
+            // capa con círculos lat-lon servicios
+            map.addLayer({
+                id: 'id-circles',
+                source: 'source_circles',
+                type: 'circle',
+                'source-layer': sourceLayerCircles,
+                paint: {
+                    'circle-radius': ['interpolate', ['linear'], ['zoom'],
+                        5, 1,
+                        11, 3,
+                        14, 5,
+                    ],
+                    'circle-opacity': 1,
+                    'circle-color': ["match", ["get", "tipo"],                  // VARIABLE TIPO
+                        "gasolineras", "#B35805",
+                        "hospitales", "#D00202",
+                        "infantiles", "#998EC3",
+                        "cajeros", "#f1a340",
+                        "#CCCCCC"]
+                },
+                filter: ['!=', 'tipo', 'Todos']
+            });
+
+
+            // capa con fills
+            
+            map.addLayer({
+                id: 'id-shapes-fill',
+                source: 'source_shapes',
+                type: 'fill',
+                'source-layer': sourceLayerShapes,
+                'paint': {
+                    'fill-color': "grey",
+                    'fill-opacity': ['interpolate', ['linear'], ["get", "m2_persona"],                      // VARIABLE m2_persona
+                        0, 0.3,
+                        1500, 0.1,
+                        74000, 0.0,
+                        4270000, 0.0]
+                }
+            }, "water-color");
+            // }, "road-rail");
+            
+            // capa con líneas
+            map.addLayer({
+                id: 'id-shapes-line',
+                source: 'source_shapes',
+                type: 'line',
+                'source-layer': sourceLayerShapes,
+                'paint': {
+                    "line-color": ["case", ["boolean", ["feature-state", "hover"], true], "black", "white"],
+                    "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0]
+                }
+            });
+
+
+            map.addSource("source_area", createGeoJSONCircle([-3.703790, 40.416775], 0));
+
+            map.addLayer({
+                "id": "id-area",
+                "type": "line",
+                "source": "source_area",
+                "layout": {},
+                "paint": {
+                    //"line-dasharray": [3, 1],
+                    "line-opacity": 0.4,
+                    'line-color': ["match", ["get", "color"],
+                        "radius_1hosp", "#D00202",
+                        "radius_2infantil", "#998EC3",
+                        "radius_2cajeros", "#f1a340",
+                        "radius_1gasolinera", "#B35805",
+                        "#CCCCCC"],
+                    "line-width": 6
+                }
+            });
+
+            // esperar que cargar para poner lista de layers
+            var wasLoaded = false;
+            map.on('render', function () {
+
+                function onlyUnique(value, index, self) { return self.indexOf(value) === index; }
+
+                if (!map.loaded() || wasLoaded) return;
+                wasLoaded = true;
+
+                // añadir Los botones al HTML
+                var Features = map.querySourceFeatures('source_circles', { sourceLayer: 'all_points' });
+                var cats = Features.map(d => d.properties.tipo).filter(onlyUnique).sort()
+
+                d3.select("#layer").selectAll("option")
+                    .data(cats).enter().append("option")
+                    .text(d => d)
+
+            });
+
+            map.on('mousemove', "id-shapes-fill", function (e) {
+                if (e.features.length > 0) {
+                    changeHovered(e.features[0])
+                    changeTooltip(e.features[0])
+                    coords_polygon = [e.features[0].properties.lon, e.features[0].properties.lat]
+                    radios_polygon = [e.features[0].properties.radius_1hosp,
+                    e.features[0].properties.radius_2infantil,
+                    e.features[0].properties.radius_2cajeros,
+                    e.features[0].properties.radius_1gasolinera]
+                    map.getSource('source_area').setData(createGeoJSONCircle(coords_polygon, radios_polygon).data);
+                }
+            });
+
+            // Escuchar geocoder si devuelve resultado y guardar destino
+            geocoder.on('result', function (ev) {
+                searched_lngLat = mapboxgl.LngLat.convert(ev.result.center)
+            });
+
+            // cuando se mueve al destino, actualizar
+            map.on('moveend', function () {
+                if (searched_lngLat) {
+                    var point = map.project(searched_lngLat)
+                    var features = map.queryRenderedFeatures(point, { layers: ['id-shapes-fill'] })
+                    //if (features.length > 0) { changeTooltip(features[0]) }
+                    if (features.length > 0) {
+                        changeHovered(features[0])
+                        changeTooltip(features[0])
+                    }
+                    map.getSource('source_area').setData(createGeoJSONCircle([searched_lngLat['lng'], searched_lngLat['lat']], 10).data);
+
+                    coords_polygon = [features[0].properties.lon, features[0].properties.lat]
+                    radios_polygon = [features[0].properties.radius_1hosp,
+                    features[0].properties.radius_2infantil,
+                    features[0].properties.radius_2cajeros,
+                    features[0].properties.radius_1gasolinera]
+
+                    map.getSource('source_area').setData(createGeoJSONCircle(coords_polygon, radios_polygon).data);
+                    searched_lngLat = null;
+                }
+            });
+
+
+            function changeHovered(feature) {
+                if (hoveredStateId) {
+                    map.setFeatureState({
+                        source: 'source_shapes',
+                        sourceLayer: sourceLayerShapes,
+                        id: hoveredStateId
+                    }, { hover: false });
+                }
+                hoveredStateId = feature.id;
+                map.setFeatureState({
+                    source: 'source_shapes',
+                    sourceLayer: sourceLayerShapes,
+                    id: hoveredStateId
+                }, { hover: true });
+            }
+
+
+            function changeTooltip(feature) {
+                // Popup y pie
+                props = feature.properties;
+                // Hay que poner el nombre del municipio
+                c_mun = props.codigo_mun;
+                mun = props.mun;
+                m2_personas = to_ES(props.m2_persona);
+                pob = to_ES(props.pob);
+                gasolineras = props.gasolineras;
+                escuelas = props.infantiles;
+                hospitales = props.hospitales;
+                cajeros = props.cajeros;
+                radius = props.radius_max;
+
+                $('#municipio').html(mun);
+                $('#c_mun').html(c_mun);
+                $('#m2_personas').html(m2_personas);
+                $('#pob').html(pob);
+                $('#hospital').html(hospitales);
+                $('#escuela').html(escuelas);
+                $('#gasolinera').html(gasolineras);
+                $('#cajero').html(cajeros);
+                $('#radius').html(radius);
+                $('#datos').removeClass('oculto');
+                $('#instrucciones').addClass('oculto');
+
+            }
+        });
+
+        var filters = ["hospitales", "infantiles", "gasolineras", "cajeros"];
+
+        $(".btnFilter").click(function () {
+            var selectedValue = this.id.replace('bt_', '');
+            if (filters.includes(selectedValue)) {
+                filters = filters.filter(function (item) {
+                    return item != selectedValue;
+                });
+            } else {
+                filters.push(selectedValue);
+            }
+
+            mapFilter = ['in', propertyToFilter];
+            $('.selected').removeClass('selected');
+            filters.forEach(function (filter) {
+                mapFilter.push(filter);
+                $('#bt_' + filter).addClass('selected');
+            });
+            map.setFilter('id-circles', ["all", mapFilter]);
+        })
+
+        var computeRet = function (km, coords, points) {
+
+            var ret = [];
+            var distanceX = km / (111.320 * Math.cos(coords.latitude * Math.PI / 180));
+            var distanceY = km / 110.574;
+
+            var theta, x, y;
+            for (var i = 0; i < points; i++) {
+                theta = (i / points) * (2 * Math.PI);
+                x = distanceX * Math.cos(theta);
+                y = distanceY * Math.sin(theta);
+
+                ret.push([coords.longitude + x, coords.latitude + y]);
+            }
+            ret.push(ret[0]);
+
+            return (ret)
+
+        }
+
+
+
+        var createGeoJSONCircle = function (center, radiusInKm, points) {
+            if (!points) points = 64;
+
+            var coords = {
+                latitude: center[1],
+                longitude: center[0]
+            };
+
+            var km = radiusInKm;
+
+            var radiusHospitales = filters.includes("hospitales") ? radiusInKm[0] : 0;
+            var radiusInfantiles = filters.includes("infantiles") ? radiusInKm[1] : 0;
+            var radiusCajeros = filters.includes("cajeros") ? radiusInKm[2] : 0;
+            var radiusGasolineras = filters.includes("gasolineras") ? radiusInKm[3] : 0;
+
+            return {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [{
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [computeRet(radiusHospitales, coords, points)]
+                        },
+                        "properties": {
+                            "color": "radius_1hosp",
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [computeRet(radiusInfantiles, coords, points)]
+                        },
+                        "properties": {
+                            "color": "radius_2infantil",
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [computeRet(radiusCajeros, coords, points)]
+                        },
+                        "properties": {
+                            "color": "radius_2cajeros",
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [computeRet(radiusGasolineras, coords, points)]
+                        },
+                        "properties": {
+                            "color": "radius_1gasolinera",
+                        }
+                    }]
+                }
+            };
+        };
+    </script>
+
+
+</body>
+
+</html>
