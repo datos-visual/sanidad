@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Mapa de especialidades médicas</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet'
+        href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css'
+        type='text/css' />
+
+    <style>
+
+    </style>
+
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <select id="especialidades">
+        <option value="especialidad_1">Especialidad 1</option>
+        <option value="especialidad_2">Especialidad 2</option>
+        <option value="especialidad_3">Especialidad 3</option>
+    </select>
+
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGF0b3NydHZlIiwiYSI6ImNrczV5YW9sdDI1azUyb3BqZW91ZGRhbzMifQ.0vdRqqdlTOWqrOtg7ldSNQ';
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-3.70279, 40.4165],
+            zoom: 5
+        });
+
+        /*
+        Para mostrar los municipios en el mapa, puedes usar la función addSource de Mapbox para añadir una fuente de datos al mapa. 
+        En este caso, puedes usar el archivo de datos en formato GeoJSON que has proporcionado para añadir los municipios al mapa.
+        */
+
+        map.addSource('municipios', {
+            type: 'geojson',
+            data: 'https://raw.githubusercontent.com/datos-visual/sanidad/main/centroides_sanidad02.geojson'
+        });
+
+        /*
+        Luego, puedes usar la función addLayer de Mapbox para añadir una capa al mapa que muestre los municipios. 
+        En este caso, puedes usar la propiedad type del GeoJSON para determinar el tipo de geometría que se debe usar para mostrar los municipios (polígono, punto, etc.)
+        y la propiedad radius para determinar el radio del círculo que se debe mostrar al pasar el mouse por encima de los municipios.
+        */
+
+        map.addLayer({
+            id: 'municipios-layer',
+            type: 'circle',
+            source: 'municipios',
+            paint: {
+                'circle-radius': ['get', 'radius'],
+                'circle-color': 'red'
+            }
+        });
+
+        /*
+        Para resaltar los polígonos de los municipios al pasar el mouse por encima de ellos, puedes usar el evento mousemove de Mapbox. 
+        En el manejador del evento, puedes usar la función queryRenderedFeatures para obtener todas las características que se encuentran debajo del puntero del mouse y,
+        a continuación, cambiar el estilo de las características que se deseen resaltar.
+        */
+
+        map.on('mousemove', function (e) {
+            var features = map.queryRenderedFeatures(e.point, { layers: ['municipios-layer'] });
+            if (features.length > 0) {
+                map.setPaintProperty('municipios-layer', 'circle-color', 'yellow');
+            } else {
+                map.setPaintProperty('municipios-layer', 'circle-color', 'red');
+            }
+        });
+
+        /*
+        Para mostrar la información adicional de los hospitales al pasar el mouse por encima de los municipios, puedes usar el evento mouseenter de Mapbox 
+        y mostrar la información en una ventana emergente o en una etiqueta flotante.
+        */
+
+        map.on('mouseenter', 'municipios-layer', function (e) {
+            var feature = e.features[0];
+            var info = '<h2>' + feature.properties.name + '</h2>' +
+                '<p>Especialidad: ' + feature.properties.tipo + '</p>' +
+                '<p>Distancia al hospital más cercano: ' + feature.properties.radius + ' km</p>';
+
+            // Muestra la información en una ventana emergente
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(info)
+                .addTo(map);
+
+            // Muestra la información en una etiqueta flotante
+            document.getElementById('info').innerHTML = info;
+        });
+
+        var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken
+        });
+
+        map.addControl(geocoder);
+
+        geocoder.on('result', function (e) {
+            // Obtiene las coordenadas del resultado del geocoder
+            var coords = e.result.geometry.coordinates;
+
+            // Ajusta el zoom y la panorámica del mapa a las coordenadas del resultado del geocoder
+            map.fitBounds([coords], {
+                padding: 20
+            });
+        });
+
+        // Filtra los municipios por especialidad
+        var municipiosFiltrados = municipios.features.filter(function (municipio) {
+            return municipio.properties.tipo === 'especialidad_seleccionada';
+        });
+
+        // Muestra los municipios filtrados en el mapa
+        map.getSource('municipios').setData({
+            type: 'FeatureCollection',
+            features: municipiosFiltrados
+        });
+
+        document.getElementById('especialidades').addEventListener('change', function () {
+            var especialidadSeleccionada = this.value;
+        });
+
+
+
+
+    </script>
+
+</body>
+
+</html>
